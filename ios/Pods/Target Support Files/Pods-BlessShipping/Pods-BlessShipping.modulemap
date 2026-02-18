@@ -1,0 +1,6 @@
+module Pods_BlessShipping {
+  umbrella header "Pods-BlessShipping-umbrella.h"
+
+  export *
+  module * { export * }
+}

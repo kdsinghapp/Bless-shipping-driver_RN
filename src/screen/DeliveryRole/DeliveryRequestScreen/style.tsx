@@ -1,0 +1,100 @@
+import { StyleSheet } from 'react-native';
+import { color } from '../../../constant';
+
+const HEADER_BG = '#035093';
+const GREEN = '#22C55E';
+const LIGHT_BG = '#E4EDF8';
+
+export default StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: HEADER_BG,
+    paddingHorizontal: 15,
+    paddingVertical: 16,
+    minHeight: 60,
+  },
+  backBtn: { padding: 4 },
+  backIcon: { width: 24, height: 24, tintColor: '#fff' },
+  avatarWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarText: { fontSize: 16, fontWeight: '700', color: '#fff' },
+  scroll: { flex: 1 },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 24, paddingBottom: 100 },
+  iconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: LIGHT_BG,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
+  iconCircleIcon: { fontSize: 36 },
+  title: { fontSize: 20, fontWeight: '700', color: '#0F172A', textAlign: 'center', marginBottom: 20 },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  detailLabel: { fontSize: 14, color: '#64748B' },
+  detailValue: { fontSize: 14, fontWeight: '600', color: '#0F172A' },
+  stepsSection: { marginTop: 24, marginBottom: 24 },
+  stepsTitle: { fontSize: 16, fontWeight: '700', color: '#0F172A', marginBottom: 16 },
+  stepsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  stepCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#E2E8F0',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  stepCircleDone: {
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+  },
+  stepLine: { flex: 1, height: 2, backgroundColor: '#E2E8F0', marginHorizontal: 8 },
+  stepLineDone: { backgroundColor: GREEN },
+  proofBox: {
+    marginTop: 16,
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    minHeight: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  proofPlaceholder: { fontSize: 14, color: '#64748B' },
+  bottomBtn: {
+    position: 'absolute',
+    left: 16,
+    right: 16,
+    bottom: 24,
+    backgroundColor: color.primary,
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bottomBtnText: { fontSize: 16, fontWeight: '700', color: '#fff' },
+});
