@@ -5,6 +5,11 @@ import { DrawerContentScrollView, DrawerContentComponentProps } from '@react-nav
 import imageIndex from '../assets/imageIndex';
 import ScreenNameEnum from '../routes/screenName.enum';
 
+import { useDispatch } from 'react-redux';
+import { handleLogout } from '../Api/apiRequest';
+import { CommonActions } from '@react-navigation/native';
+import { color } from '../constant';
+
 const DRAWER_ICON_COLOR = '#035093';
 const ACTIVE_BG = '#E4EDF8';
 
@@ -24,6 +29,15 @@ const MENU_ITEMS: { name: DrawerRouteName; label: string; icon: any }[] = [
 
 const DeliveryDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
   const { state, navigation } = props;
+  const dispatch = useDispatch();
+
+  const onLogout = async () => {
+    navigation.closeDrawer();
+    await handleLogout(dispatch);
+    navigation.dispatch(
+      CommonActions.reset({ index: 0, routes: [{ name: ScreenNameEnum.ChooseRole }] })
+    );
+  };
 
   return (
     <DrawerContentScrollView
@@ -58,6 +72,12 @@ const DeliveryDrawerContent: React.FC<DrawerContentComponentProps> = (props) => 
             </TouchableOpacity>
           );
         })}
+      </View>
+      <View style={styles.logoutWrap}>
+        <TouchableOpacity style={styles.logoutBtn} onPress={onLogout} activeOpacity={0.8}>
+          <Image source={imageIndex.logout} style={styles.logoutIcon} resizeMode="contain" />
+          <Text style={styles.logoutLabel}>Logout</Text>
+        </TouchableOpacity>
       </View>
     </DrawerContentScrollView>
   );
@@ -96,6 +116,30 @@ const styles = StyleSheet.create({
   menuIcon: { width: 22, height: 22 },
   menuLabel: { fontSize: 16, fontWeight: '500' },
   menuLabelActive: { fontWeight: '600' },
+  logoutWrap: {
+    marginTop: 'auto',
+    paddingBottom: 24,
+    paddingTop: 16,
+  },
+  logoutBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: color.red,
+  },
+  logoutIcon: {
+    width: 22,
+    height: 22,
+    marginRight: 14,
+    tintColor: '#fff',
+  },
+  logoutLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
+  },
 });
 
 export default DeliveryDrawerContent;

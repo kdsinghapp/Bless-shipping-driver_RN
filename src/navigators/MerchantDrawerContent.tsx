@@ -37,7 +37,7 @@ const MerchantDrawerContent: React.FC<DrawerContentComponentProps> = (props) => 
 successToast("You have been logged out successfully");
     await handleLogout(dispatch);
     navigation.dispatch(
-      CommonActions.reset({ index: 0, routes: [{ name: ScreenNameEnum.PhoneLogin }] })
+      CommonActions.reset({ index: 0, routes: [{ name: ScreenNameEnum.ChooseRole }] })
     );
   };
 

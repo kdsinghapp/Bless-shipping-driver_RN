@@ -132,7 +132,8 @@ NotificationsScreen ="NotificationsScreen",
   Patient_Driver = "Patient_Driver",
   RaceDetail = "RaceDetail",
   PresubscriberDetail = "presubscriberDetail",
-  CarDetail = "CarDetail"
+  CarDetail = "CarDetail",
+  VEHICLE_SELECTION = 'VEHICLE_SELECTION',
 
 }
 

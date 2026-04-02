@@ -29,7 +29,7 @@ const DeliveryProfileScreen = () => {
   const onLogout = async () => {
     await handleLogout(dispatch);
     navigation.dispatch(
-      CommonActions.reset({ index: 0, routes: [{ name: ScreenNameEnum.ChooseRole }] })
+      CommonActions.reset({ index: 0, routes: [{ name: ScreenNameEnum.OnboardingScreen }] })
     );
   };
 
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#E2E8F0',
   },
   headerBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  backIcon: { width: 44, height: 44,  },
+  backIcon: { width: 44, height: 44, },
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#0F172A' },
   scroll: { flex: 1 },
   scrollContent: { padding: 16, paddingBottom: 32 },
@@ -112,10 +112,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 8,
     shadowOpacity: 0.08,
-shadowRadius: 6,
+    shadowRadius: 6,
 
-// Android shadow
-elevation: 4,
+    // Android shadow
+    elevation: 4,
   },
   menuIconWrap: {
     width: 44,

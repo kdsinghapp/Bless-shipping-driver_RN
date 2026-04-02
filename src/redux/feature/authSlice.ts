@@ -47,6 +47,7 @@ const AuthSlice = createSlice({
 
       // 🔥 Clear AsyncStorage on logout
       AsyncStorage.removeItem('authData');
+      AsyncStorage.removeItem('token');
     },
   },
 });

@@ -10,6 +10,7 @@ import OtpScreen from "../screen/auth/OTPScreen/OtpScreen";
 import LegalPoliciesScreen from "../screen/Profile/LegalPoliciesScreen";
 import PrivacyPolicy from "../screen/Profile/PrivacyPolicy";
 import EditProfile from "../screen/Profile/EditProfile/EditProfile";
+import VehicleSelectionScreen from "../screen/auth/VehicleSelection/VehicleSelectionScreen";
 
 import ChooseRole from "../screen/auth/ChooseRole/ChooseRole";
 import MerchantDrawerNavigator from "../navigators/MerchantDrawerNavigator";
@@ -19,14 +20,7 @@ import DeliveryOrdersList from "../screen/DeliveryRole/DeliveryOrdersList/Delive
 import DeliveryRequestScreen from "../screen/DeliveryRole/DeliveryRequestScreen/DeliveryRequestScreen";
 import DeliveryOrderDetailsScreen from "../screen/DeliveryRole/DeliveryOrderDetails/DeliveryOrderDetailsScreen";
 import DeliveryFailedScreen from "../screen/DeliveryRole/DeliveryFailed/DeliveryFailedScreen";
-import OrderConfirmation from "../screen/MerchantRole/OrderConfirmation/OrderConfirmation";
-import PricingPreview from "../screen/MerchantRole/PricingPreview/PricingPreview";
-import OrderDetail from "../screen/MerchantRole/OrderDetail/OrderDetail";
-import InvoiceDetailsScreen from "../screen/MerchantRole/Invoices/InvoiceDetailsScreen";
-import MerchantDashboard from "../screen/MerchantRole/DashBoard/MerchantDashboard";
-import UploadOrders from "../screen/MerchantRole/UploadOrders/UploadOrders";
-import ViewOrders from "../screen/MerchantRole/ViewOrders/ViewOrders";
-import MerchantViewOrders from "../screen/MerchantRole/MerchantViewOrders/MerchantViewOrders";
+ 
 import UserRoleLoginScreen from "../screen/auth/UserRoleLoginScreen/UserRoleLoginScreen";
 import UserRoleDashBoard from "../screen/UserRole/UserRoleDashBoard/UserRoleDashBoard";
 import SendPackage from "../screen/UserRole/SendPackage/SendPackage";
@@ -120,15 +114,7 @@ const _routes: any = {
       name: ScreenNameEnum.PhoneLogin,
       Component: PhoneLogin,
     },
-
-    {
-      name: ScreenNameEnum.UploadOrders,
-      Component: UploadOrders,
-    },
-    {
-      name: ScreenNameEnum.ViewOrders,
-      Component: ViewOrders,
-    },
+ 
 
     {
       name: ScreenNameEnum.changePassword,
@@ -148,10 +134,7 @@ const _routes: any = {
       name: ScreenNameEnum.PrivacyPolicy,
       Component: PrivacyPolicy,
     },
-    {
-      name: ScreenNameEnum.MerchantDashboard,
-      Component: MerchantDashboard,
-    },
+ 
     {
       name: ScreenNameEnum.MerchantDrawer,
       Component: MerchantDrawerNavigator,
@@ -159,6 +142,10 @@ const _routes: any = {
     {
       name: ScreenNameEnum.DeliveryDrawer,
       Component: DeliveryDrawerNavigator,
+    },
+    {
+      name: ScreenNameEnum.VEHICLE_SELECTION,
+      Component: VehicleSelectionScreen,
     },
     {
       name: ScreenNameEnum.DeliveryHome,
@@ -172,10 +159,7 @@ const _routes: any = {
       name: ScreenNameEnum.DeliveryRequest,
       Component: DeliveryRequestScreen,
     },
-    {
-      name: ScreenNameEnum.MerchantViewOrders,
-      Component: MerchantViewOrders,
-    },
+    
     {
       name: ScreenNameEnum.ProfileScreen,
       Component: EditProfile,
@@ -188,22 +172,9 @@ const _routes: any = {
       name: ScreenNameEnum.DeliveryFailed,
       Component: DeliveryFailedScreen,
     },
-    {
-      name: ScreenNameEnum.OrderConfirmation,
-      Component: OrderConfirmation,
-    },
-    {
-      name: ScreenNameEnum.PricingPreview,
-      Component: PricingPreview,
-    },
-    {
-      name: ScreenNameEnum.ViewDetails,
-      Component: OrderDetail,
-    },
-    {
-      name: ScreenNameEnum.InvoiceDetails,
-      Component: InvoiceDetailsScreen,
-    },
+     
+    
+    
     {
       name: ScreenNameEnum.LegalPoliciesScreen,
       Component: LegalPoliciesScreen,

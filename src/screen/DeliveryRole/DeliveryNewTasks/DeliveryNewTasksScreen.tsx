@@ -12,6 +12,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import StatusBarComponent from '../../../compoent/StatusBarCompoent';
 import DeclineReasonModal, { DeclineReasonKey } from '../../../compoent/DeclineReasonModal';
+import { GetDriverTasksApi } from '../../../Api/apiRequest';
+import { ActivityIndicator } from 'react-native';
 import ScreenNameEnum from '../../../routes/screenName.enum';
 import imageIndex from '../../../assets/imageIndex';
 import { color } from '../../../constant';
@@ -42,7 +44,21 @@ const DeliveryNewTasksScreen = () => {
   const [isOnline, setIsOnline] = useState(true);
   const [filter, setFilter] = useState<TaskFilter>('Assigned');
   const [declineModalVisible, setDeclineModalVisible] = useState(false);
-  const [declineTask, setDeclineTask] = useState<TaskItem | null>(null);
+  const [declineTask, setDeclineTask] = useState<any | null>(null);
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [isLoadingTasks, setIsLoadingTasks] = useState(false);
+
+  React.useEffect(() => {
+    fetchTasks();
+  }, [filter]);
+
+  const fetchTasks = async () => {
+    const tabParam = filter === 'Assigned' ? 'new' : 'completed';
+    const data = await GetDriverTasksApi(tabParam, setIsLoadingTasks);
+    if (data) {
+      setTasks(data);
+    }
+  };
 
   const openDrawer = () => navigation.dispatch(DrawerActions.openDrawer());
 
@@ -137,53 +153,61 @@ const DeliveryNewTasksScreen = () => {
       </View>
 
       {/* Task list */}
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {(filter === 'Assigned' ? MOCK_TASKS : []).map((task) => (
-          <View key={task.id} style={[styles.card, task.expired && styles.cardExpired]}>
-            <View style={styles.cardTop}>
-              <View style={styles.idRow}>
-                {!task.expired && <View style={styles.greenDot} />}
-                <Text style={[styles.taskId, task.expired && styles.taskIdExpired]}>#{task.id}</Text>
+      {isLoadingTasks ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color={color.primary} />
+        </View>
+      ) : (
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {tasks.length > 0 ? (
+            tasks.map((task) => (
+              <View key={task._id} style={styles.card}>
+                <View style={styles.cardTop}>
+                  <View style={styles.idRow}>
+                    <View style={styles.greenDot} />
+                    <Text style={styles.taskId}>#{task.orderNumber}</Text>
+                  </View>
+                  <View style={styles.tagScheduled}>
+                    <Text style={styles.tagText}>{task.dispatchStatus}</Text>
+                  </View>
+                </View>
+                
+                <View style={styles.addressRow}>
+                  <Image source={imageIndex.locationpin2} style={styles.pinIcon} resizeMode="contain" />
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.addressText} numberOfLines={2}>
+                      Pickup: {task.pickupAddress}
+                    </Text>
+                    <Text style={[styles.addressText, { marginTop: 4 }]} numberOfLines={2}>
+                      Drop: {task.dropAddress}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.actionsRow}>
+                  <TouchableOpacity style={styles.acceptBtn} onPress={() => onAccept(task)} activeOpacity={0.85}>
+                    <Text style={styles.acceptBtnText}>Accept</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.declineBtn} onPress={() => onDecline(task)} activeOpacity={0.85}>
+                    <Text style={styles.declineBtnText}>Decline</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.cardTime}>
+                    {new Date(task.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </Text>
+                </View>
               </View>
-              <View style={getTagStyle(task.tag)}>
-                <Text style={styles.tagText}>{getTagLabel(task.tag)}</Text>
-              </View>
+            ))
+          ) : (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyText}>No {filter.toLowerCase()} tasks yet</Text>
             </View>
-            {task.timer && !task.expired && (
-              <View style={styles.timerRow}>
-                <Image source={imageIndex.time} style={styles.clockIcon} resizeMode="contain" />
-                <Text style={styles.timerText}>{task.timer}</Text>
-              </View>
-            )}
-            <View style={styles.addressRow}>
-              <Image source={imageIndex.locationpin2} style={styles.pinIcon} resizeMode="contain" />
-              <Text style={[styles.addressText, task.expired && styles.addressTextExpired]} numberOfLines={2}>
-                {task.address}
-              </Text>
-            </View>
-            {!task.expired && (
-              <View style={styles.actionsRow}>
-                <TouchableOpacity style={styles.acceptBtn} onPress={() => onAccept(task)} activeOpacity={0.85}>
-                  <Text style={styles.acceptBtnText}>Accept</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.declineBtn} onPress={() => onDecline(task)} activeOpacity={0.85}>
-                  <Text style={styles.declineBtnText}>Decline</Text>
-                </TouchableOpacity>
-                <Text style={styles.cardTime}>{task.time}</Text>
-              </View>
-            )}
-          </View>
-        ))}
-        {filter === 'Completed' && (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>No completed tasks yet</Text>
-          </View>
-        )}
-      </ScrollView>
+          )}
+        </ScrollView>
+      )}
 
       <DeclineReasonModal
         visible={declineModalVisible}

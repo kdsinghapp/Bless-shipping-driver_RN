@@ -61,7 +61,7 @@ export const useOtpVerification = (cellCount: number = 4) => {
 
   const handleVerifyOTP = async () => {
 
-            navigation.replace(ScreenNameEnum.UserRoleDashBoard);
+            navigation.replace(ScreenNameEnum.VEHICLE_SELECTION);
 
     // if (value.length !== cellCount) {
     //   setErrorMessage('Please enter 4 digit OTP');

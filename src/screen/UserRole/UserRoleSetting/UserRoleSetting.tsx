@@ -49,7 +49,7 @@ const UserRoleSetting = () => {
   const onLogout = async () => {
     await handleLogout(dispatch);
     navigation.dispatch(
-      CommonActions.reset({ index: 0, routes: [{ name: ScreenNameEnum.ChooseRole }] })
+      CommonActions.reset({ index: 0, routes: [{ name: ScreenNameEnum.OnboardingScreen }] })
     );
   };
 
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     minHeight: 60,
   },
   backBtn: { padding: 4 },
-  backIcon: { width: 44, height: 44,   },
+  backIcon: { width: 44, height: 44, },
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
   headerRight: { width: 40 },
 
