@@ -172,7 +172,12 @@ const DeliveryNewTasksScreen = () => {
         >
           {tasks.length > 0 ? (
             tasks.map((task) => (
-              <View key={task._id} style={styles.card}>
+              <TouchableOpacity
+                key={task._id}
+                style={styles.card}
+                activeOpacity={0.9}
+                onPress={() => navigation.navigate(ScreenNameEnum.DeliveryOrderDetails, { order: { id: task._id } })}
+              >
                 <View style={styles.cardTop}>
                   <View style={styles.idRow}>
                     <View style={styles.greenDot} />
@@ -206,7 +211,7 @@ const DeliveryNewTasksScreen = () => {
                     {new Date(task.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))
           ) : (
             <View style={styles.emptyState}>

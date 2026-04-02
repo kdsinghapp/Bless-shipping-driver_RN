@@ -1257,6 +1257,57 @@ const DeclineOrderApi = async (
   }
 };
 
+/** Get driver order details - GET /driver/order/:id */
+const GetDriverOrderDetailsApi = async (
+  orderId: string,
+  setLoading: (loading: boolean) => void,
+): Promise<any> => {
+  try {
+    setLoading(true);
+    const token = await AsyncStorage.getItem('token');
+    if (!token) {
+      clearAuthSession();
+      errorToast('Session expired. Please login again.');
+      return undefined;
+    }
+
+    const headers: any = {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+    };
+
+    const url = `${base_url}/${endpoints.driverOrderDetails}/${orderId}`;
+    console.log('Fetching Driver Order Details:', url);
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: headers,
+    });
+
+    const text = await response.text();
+    let parsed: any;
+    try {
+      parsed = JSON.parse(text);
+    } catch (e) {
+      errorToast('Invalid server response');
+      return undefined;
+    }
+
+    if (parsed?.success) {
+      return parsed.data;
+    } else {
+      errorToast(parsed?.message || 'Failed to fetch order details');
+      return undefined;
+    }
+  } catch (error) {
+    console.error('Get Order Details API Error:', error);
+    errorToast('Network error');
+    return undefined;
+  } finally {
+    setLoading(false);
+  }
+};
+
 export {
   LogiApi,
   SignUpApi,
@@ -1278,4 +1329,5 @@ export {
   AssignVehicleToDriverApi,
   AcceptOrderApi,
   DeclineOrderApi,
+  GetDriverOrderDetailsApi,
 };

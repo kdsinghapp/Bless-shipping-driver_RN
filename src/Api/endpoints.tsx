@@ -30,5 +30,6 @@ export const endpoints = {
   driverTasks: "driver/tasks",
   acceptOrder: "driver/accept/order",
   declineOrder: "driver/decline/order",
+  driverOrderDetails: "driver/order",
 };
  

@@ -20,6 +20,8 @@ import DeliveryCompletedModal from '../../../compoent/DeliveryCompletedModal';
 import ScreenNameEnum from '../../../routes/screenName.enum';
 import imageIndex from '../../../assets/imageIndex';
 import { color } from '../../../constant';
+import { GetDriverOrderDetailsApi } from '../../../Api/apiRequest';
+import { ActivityIndicator } from 'react-native';
 
 type PodStatus = 'idle' | 'uploading' | 'error' | 'success';
 
@@ -76,10 +78,37 @@ const DeliveryOrderDetailsScreen = () => {
   const [arrivalModalVisible, setArrivalModalVisible] = useState(false);
   const [completedModalVisible, setCompletedModalVisible] = useState(false);
   const [isAccepted, setIsAccepted] = useState(isAcceptedFromParam);
+  const [orderData, setOrderData] = useState<OrderData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [podStatus, setPodStatus] = useState<PodStatus>('idle');
   const [podProgress, setPodProgress] = useState(0);
   const [podPhotoUri, setPodPhotoUri] = useState<string | null>(null);
   const uploadSimulationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  React.useEffect(() => {
+    if (order.id) {
+      fetchOrderDetails();
+    }
+  }, [order.id]);
+
+  const fetchOrderDetails = async () => {
+    const data = await GetDriverOrderDetailsApi(order.id, setIsLoading);
+    if (data) {
+      setOrderData({
+        id: data._id,
+        orderId: data.orderNumber,
+        pickupLocation: data.pickupAddress,
+        pickupAddress: data.pickupAddress,
+        name: data.recipientName,
+        postalCode: 'N/A', // Update if API returns this
+        height: 'N/A', // Update if API returns this
+        receiverName: data.recipientName,
+        receiverPhone: data.recipientPhone,
+        weight: 'N/A', // Update if API returns this
+        deliveryLocation: data.dropAddress,
+      });
+    }
+  };
 
   const isStatusDone = (key: OrderStatusStep) => {
     if (currentStatus === 'assigned') return false;
@@ -238,208 +267,221 @@ const DeliveryOrderDetailsScreen = () => {
         )}
       </View>
 
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Order card */}
-        <View style={styles.card}>
-          <View style={styles.packageIconWrap}>
-            <Image source={imageIndex.order2} style={styles.packageIcon} resizeMode="contain" />
-          </View>
-
-          <Text style={styles.sectionLabel}>Pickup Location</Text>
-          <Text style={styles.addressText}>{order.pickupLocation}</Text>
-
-          <View style={styles.twoColRow}>
-            <View style={styles.col}>
-              <Text style={styles.fieldLabel}>Name</Text>
-              <Text style={styles.fieldValue}>{order.name}</Text>
-              <Text style={styles.fieldLabel}>Postal Code</Text>
-              <Text style={styles.fieldValue}>{order.postalCode}</Text>
-              <Text style={styles.fieldLabel}>Height</Text>
-              <Text style={styles.fieldValue}>{order.height}</Text>
-            </View>
-            <View style={styles.col}>
-              <Text style={styles.fieldLabel}>Receiver Name</Text>
-              <Text style={styles.fieldValue}>{order.receiverName}</Text>
-              <Text style={styles.fieldLabel}>Receiver Phone Number</Text>
-              <Text style={styles.fieldValue}>{order.receiverPhone}</Text>
-              <Text style={styles.fieldLabel}>Weight</Text>
-              <Text style={styles.fieldValue}>{order.weight}</Text>
-            </View>
-          </View>
-
-          <View style={styles.pickupAddressRow}>
-            <Text style={styles.sectionLabel}>Pickup Address</Text>
-            <TouchableOpacity onPress={copyPickupAddress} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <Image source={imageIndex.copy} style={styles.copyIcon} resizeMode="contain" />
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.addressText}>{order.pickupAddress}</Text>
+      {/* Order Status timeline */}
+      {isLoading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 100 }}>
+          <ActivityIndicator size="large" color={color.primary} />
         </View>
+      ) : orderData ? (
+        <>
+          <ScrollView
+            style={styles.scroll}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Order card */}
+            <View style={styles.card}>
+              <View style={styles.packageIconWrap}>
+                <Image source={imageIndex.order2} style={styles.packageIcon} resizeMode="contain" />
+              </View>
 
-        {/* Order Status timeline */}
-        <View style={styles.statusSection}>
-          <Text style={styles.statusTitle}>Order Status</Text>
-          <Text style={styles.statusSubtitle}>System generated timeline</Text>
-          <View style={styles.timelineWrap}>
-            {STATUS_STEPS.map((step, index) => (
-              <React.Fragment key={step.key}>
-                <View style={styles.timelineItem}>
-                  <View
-                    style={[
-                      styles.timelineCircle,
-                      (isStatusDone(step.key) || isStatusActive(step.key)) && styles.timelineCircleActive,
-                    ]}
-                  >
-                    {isStatusDone(step.key) ? (
-                      <Text style={styles.timelineCheck}>✓</Text>
-                    ) : (
-                      <Image
-                        source={
-                          step.key === 'accepted'
-                            ? imageIndex.Assigned
-                            : step.key === 'arrived'
-                            ? imageIndex.Accepted
-                            : step.key === 'delivered'
-                            ? imageIndex.Arrived
-                            : imageIndex.Delivered
-                        }
-                        style={[
-                          styles.timelineIcon,
-                          isStatusActive(step.key) && styles.timelineIconActive,
-                        ]}
-                        resizeMode="contain"
-                      />
-                    )}
-                  </View>
-                  <Text
-                    style={[
-                      styles.timelineLabel,
-                      (isStatusDone(step.key) || isStatusActive(step.key)) && styles.timelineLabelActive,
-                    ]}
-                    numberOfLines={1}
-                  >
-                    {step.label}
-                  </Text>
+              <Text style={styles.sectionLabel}>Pickup Location</Text>
+              <Text style={styles.addressText}>{orderData.pickupLocation}</Text>
+
+              <View style={styles.twoColRow}>
+                <View style={styles.col}>
+                  <Text style={styles.fieldLabel}>Name</Text>
+                  <Text style={styles.fieldValue}>{orderData.name}</Text>
+                  <Text style={styles.fieldLabel}>Postal Code</Text>
+                  <Text style={styles.fieldValue}>{orderData.postalCode}</Text>
+                  <Text style={styles.fieldLabel}>Order Number</Text>
+                  <Text style={styles.fieldValue}>{orderData.orderId}</Text>
                 </View>
-                {index < STATUS_STEPS.length - 1 && (
-                  <View style={[styles.timelineLine, isStatusDone(step.key) && styles.timelineLineActive]} />
-                )}
-              </React.Fragment>
-            ))}
-          </View>
-        </View>
-
-        {/* POD section - when arrived */}
-        {currentStatus === 'arrived' && (
-          <View style={styles.podSection}>
-            <Text style={[styles.podSectionTitle,{
-              textAlign:"center"
-            }]}>Delivered (POD Required)</Text>
-            <TouchableOpacity
-              style={styles.podBox}
-              onPress={() => {
-                if (podStatus === 'uploading') return;
-                if (podStatus === 'success') changePodPhoto();
-                else if (podStatus === 'error') reUploadPod();
-                else startPodUpload();
-              }}
-              activeOpacity={0.85}
-              disabled={podStatus === 'uploading'}
-            >
-              {podStatus === 'success' && podPhotoUri ? (
-                <Image source={{ uri: podPhotoUri }} style={styles.podThumbnail} resizeMode="cover" />
-              ) : (
-                <Image source={imageIndex.document} style={styles.podIcon} resizeMode="contain" />
-              )}
-              <View style={styles.podBoxText}>
-                <Text style={styles.podBoxLabel}>
-                  {podStatus === 'success' ? 'Proof of delivery uploaded' : 'Upload proof of delivery'}
-                </Text>
-                <Text style={[styles.podBoxSub, podStatus === 'error' && styles.podBoxSubError]}>
-                  {podStatus === 'idle' && 'Upload updated if available'}
-                  {podStatus === 'error' && 'Uploaded. Please try again.'}
-                  {podStatus === 'uploading' && `uploading_photo....(${podProgress}%)`}
-                  {podStatus === 'success' && 'Photo uploaded successfully'}
-                </Text>
-                <View style={styles.podActionRow}>
-                  {podStatus === 'idle' && (
-                    <Text style={styles.podActionButton}>Upload or Photo</Text>
-                  )}
-                  {podStatus === 'error' && (
-                    <Text style={styles.podActionButton}>Re-Upload</Text>
-                  )}
-                  {podStatus === 'uploading' && null}
-                  {podStatus === 'success' && (
-                    <Text style={styles.podActionButton}>Change Photo</Text>
-                  )}
+                <View style={styles.col}>
+                  <Text style={styles.fieldLabel}>Receiver Name</Text>
+                  <Text style={styles.fieldValue}>{orderData.receiverName}</Text>
+                  <Text style={styles.fieldLabel}>Receiver Phone Number</Text>
+                  <Text style={styles.fieldValue}>{orderData.receiverPhone}</Text>
+                  <Text style={styles.fieldLabel}>Drop Address</Text>
+                  <Text style={styles.fieldValue}>{orderData.deliveryLocation}</Text>
                 </View>
               </View>
-            </TouchableOpacity>
-          
-          </View>
-        )}
-  <View style={styles.podInstructions}>
+
+              <View style={styles.pickupAddressRow}>
+                <Text style={styles.sectionLabel}>Full Address</Text>
+                <TouchableOpacity onPress={() => Alert.alert('Address', orderData.pickupAddress)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                  <Image source={imageIndex.copy} style={styles.copyIcon} resizeMode="contain" />
+                </TouchableOpacity>
+              </View>
+              <Text style={styles.addressText}>{orderData.pickupAddress}</Text>
+            </View>
+
+            {/* Order Status timeline */}
+            <View style={styles.statusSection}>
+              <Text style={styles.statusTitle}>Order Status</Text>
+              <Text style={styles.statusSubtitle}>System generated timeline</Text>
+              <View style={styles.timelineWrap}>
+                {STATUS_STEPS.map((step, index) => (
+                  <React.Fragment key={step.key}>
+                    <View style={styles.timelineItem}>
+                      <View
+                        style={[
+                          styles.timelineCircle,
+                          (isStatusDone(step.key) || isStatusActive(step.key)) && styles.timelineCircleActive,
+                        ]}
+                      >
+                        {isStatusDone(step.key) ? (
+                          <Text style={styles.timelineCheck}>✓</Text>
+                        ) : (
+                          <Image
+                            source={
+                              step.key === 'accepted'
+                                ? imageIndex.Assigned
+                                : step.key === 'arrived'
+                                ? imageIndex.Accepted
+                                : step.key === 'delivered'
+                                ? imageIndex.Arrived
+                                : imageIndex.Delivered
+                            }
+                            style={[
+                              styles.timelineIcon,
+                              isStatusActive(step.key) && styles.timelineIconActive,
+                            ]}
+                            resizeMode="contain"
+                          />
+                        )}
+                      </View>
+                      <Text
+                        style={[
+                          styles.timelineLabel,
+                          (isStatusDone(step.key) || isStatusActive(step.key)) && styles.timelineLabelActive,
+                        ]}
+                        numberOfLines={1}
+                      >
+                        {step.label}
+                      </Text>
+                    </View>
+                    {index < STATUS_STEPS.length - 1 && (
+                      <View style={[styles.timelineLine, isStatusDone(step.key) && styles.timelineLineActive]} />
+                    )}
+                  </React.Fragment>
+                ))}
+              </View>
+            </View>
+
+            {/* POD section - when arrived */}
+            {currentStatus === 'arrived' && (
+              <View style={styles.podSection}>
+                <Text style={[styles.podSectionTitle,{
+                  textAlign:"center"
+                }]}>Delivered (POD Required)</Text>
+                <TouchableOpacity
+                  style={styles.podBox}
+                  onPress={() => {
+                    if (podStatus === 'uploading') return;
+                    if (podStatus === 'success') changePodPhoto();
+                    else if (podStatus === 'error') reUploadPod();
+                    else startPodUpload();
+                  }}
+                  activeOpacity={0.85}
+                  disabled={podStatus === 'uploading'}
+                >
+                  {podStatus === 'success' && podPhotoUri ? (
+                    <Image source={{ uri: podPhotoUri }} style={styles.podThumbnail} resizeMode="cover" />
+                  ) : (
+                    <Image source={imageIndex.document} style={styles.podIcon} resizeMode="contain" />
+                  )}
+                  <View style={styles.podBoxText}>
+                    <Text style={styles.podBoxLabel}>
+                      {podStatus === 'success' ? 'Proof of delivery uploaded' : 'Upload proof of delivery'}
+                    </Text>
+                    <Text style={[styles.podBoxSub, podStatus === 'error' && styles.podBoxSubError]}>
+                      {podStatus === 'idle' && 'Upload updated if available'}
+                      {podStatus === 'error' && 'Uploaded. Please try again.'}
+                      {podStatus === 'uploading' && `uploading_photo....(${podProgress}%)`}
+                      {podStatus === 'success' && 'Photo uploaded successfully'}
+                    </Text>
+                    <View style={styles.podActionRow}>
+                      {podStatus === 'idle' && (
+                        <Text style={styles.podActionButton}>Upload or Photo</Text>
+                      )}
+                      {podStatus === 'error' && (
+                        <Text style={styles.podActionButton}>Re-Upload</Text>
+                      )}
+                      {podStatus === 'uploading' && null}
+                      {podStatus === 'success' && (
+                        <Text style={styles.podActionButton}>Change Photo</Text>
+                      )}
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              
+              </View>
+            )}
+            <View style={styles.podInstructions}>
               <Text style={styles.podInstructionsTitle}>Photo requirements:</Text>
               <Text style={styles.podInstructionItem}>• Parcel clearly visible</Text>
               <Text style={styles.podInstructionItem}>• Receiver name | parcel label visible</Text>
               <Text style={styles.podInstructionItem}>• Photo should not be blurred</Text>
             </View>
-        <View style={styles.bottomSpacer} />
-      </ScrollView>
+            <View style={styles.bottomSpacer} />
+          </ScrollView>
 
-      {/* Bottom action buttons */}
-      <View style={styles.bottomActions}>
-        {!isAccepted ? (
-          <>
-            <TouchableOpacity style={[styles.btnOutlineBlue, { backgroundColor: '#035093' }]} onPress={openMaps} activeOpacity={0.85}>
-              <Image source={imageIndex.locationpin} style={styles.btnIcon} resizeMode="contain" />
-              <Text style={[styles.btnOutlineBlueText, { color: 'white' }]}>Open In Google Maps</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.btnOutlineRed} onPress={onDecline} activeOpacity={0.85}>
-              <Text style={styles.btnOutlineRedText}>Decline</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.btnSolidGreen} onPress={onAccept} activeOpacity={0.85}>
-              <Text style={styles.btnSolidGreenText}>Accept</Text>
-            </TouchableOpacity>
-          </>
-        ) : currentStatus === 'accepted' ? (
-          <>
-            <TouchableOpacity style={styles.btnDarkBlue} onPress={openMaps} activeOpacity={0.85}>
-              <Image source={imageIndex.locationpin2} style={styles.btnIconWhite} resizeMode="contain" />
-              <Text style={styles.btnWhiteText}>Open In Google Maps</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.btnCyan} onPress={onCallCustomer} activeOpacity={0.85}>
-              <Image source={imageIndex.Calls} style={styles.btnIconWhite} resizeMode="contain" />
-              <Text style={styles.btnWhiteText}>Call Customer</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.btnGreen} onPress={onMarkArrivedPress} activeOpacity={0.85}>
-              <Text style={styles.btnWhiteText}>Mark Arrived</Text>
-            </TouchableOpacity>
-          </>
-        ) : currentStatus === 'arrived' ? (
-          <>
-            <TouchableOpacity style={styles.btnGreen} onPress={openMaps} activeOpacity={0.85}>
-              {/* <Image source={imageIndex.locationpin2} style={styles.btnIconWhite} resizeMode="contain" /> */}
-              <Text style={styles.btnWhiteText}>Open in Google Maps</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.btnReportFailure} onPress={onReportFailure} activeOpacity={0.85}>
-              <Text style={styles.btnReportFailureText}>Report a failure</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.btnSubmit, !podSuccess && styles.btnSubmitDisabled]}
-              onPress={onCompleteDelivery}
-              activeOpacity={0.85}
-              disabled={!podSuccess}
-            >
-              <Text style={[styles.btnSubmitText, !podSuccess && styles.btnSubmitTextDisabled]}>Submit</Text>
-            </TouchableOpacity>
-          </>
-        ) : null}
-      </View>
+          {/* Bottom action buttons */}
+          <View style={styles.bottomActions}>
+            {!isAccepted ? (
+              <>
+                <TouchableOpacity style={[styles.btnOutlineBlue, { backgroundColor: '#035093' }]} onPress={openMaps} activeOpacity={0.85}>
+                  <Image source={imageIndex.locationpin} style={styles.btnIcon} resizeMode="contain" />
+                  <Text style={[styles.btnOutlineBlueText, { color: 'white' }]}>Open In Google Maps</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btnOutlineRed} onPress={onDecline} activeOpacity={0.85}>
+                  <Text style={styles.btnOutlineRedText}>Decline</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btnSolidGreen} onPress={onAccept} activeOpacity={0.85}>
+                  <Text style={styles.btnSolidGreenText}>Accept</Text>
+                </TouchableOpacity>
+              </>
+            ) : currentStatus === 'accepted' ? (
+              <>
+                <TouchableOpacity style={styles.btnDarkBlue} onPress={openMaps} activeOpacity={0.85}>
+                  <Image source={imageIndex.locationpin2} style={styles.btnIconWhite} resizeMode="contain" />
+                  <Text style={styles.btnWhiteText}>Open In Google Maps</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btnCyan} onPress={onCallCustomer} activeOpacity={0.85}>
+                  <Image source={imageIndex.Calls} style={styles.btnIconWhite} resizeMode="contain" />
+                  <Text style={styles.btnWhiteText}>Call Customer</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btnGreen} onPress={onMarkArrivedPress} activeOpacity={0.85}>
+                  <Text style={styles.btnWhiteText}>Mark Arrived</Text>
+                </TouchableOpacity>
+              </>
+            ) : currentStatus === 'arrived' ? (
+              <>
+                <TouchableOpacity style={styles.btnGreen} onPress={openMaps} activeOpacity={0.85}>
+                  {/* <Image source={imageIndex.locationpin2} style={styles.btnIconWhite} resizeMode="contain" /> */}
+                  <Text style={styles.btnWhiteText}>Open in Google Maps</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btnReportFailure} onPress={onReportFailure} activeOpacity={0.85}>
+                  <Text style={styles.btnReportFailureText}>Report a failure</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.btnSubmit, !podSuccess && styles.btnSubmitDisabled]}
+                  onPress={onCompleteDelivery}
+                  activeOpacity={0.85}
+                  disabled={!podSuccess}
+                >
+                  <Text style={[styles.btnSubmitText, !podSuccess && styles.btnSubmitTextDisabled]}>Submit</Text>
+                </TouchableOpacity>
+              </>
+            ) : null}
+          </View>
+        </>
+      ) : (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: color.grey }}>Order details not found.</Text>
+        </View>
+      )}
 
       <ArrivalConfirmationModal
         visible={arrivalModalVisible}
