@@ -28,5 +28,7 @@ export const endpoints = {
   ordersUserCreate: 'orders/user/create',
   assignVehicle: "vehicle/assign/driver",
   driverTasks: "driver/tasks",
+  acceptOrder: "driver/accept/order",
+  declineOrder: "driver/decline/order",
 };
  

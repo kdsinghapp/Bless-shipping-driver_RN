@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import StatusBarComponent from '../../../compoent/StatusBarCompoent';
 import DeclineReasonModal, { DeclineReasonKey } from '../../../compoent/DeclineReasonModal';
-import { GetDriverTasksApi } from '../../../Api/apiRequest';
+import { GetDriverTasksApi, AcceptOrderApi, DeclineOrderApi } from '../../../Api/apiRequest';
 import { ActivityIndicator } from 'react-native';
 import ScreenNameEnum from '../../../routes/screenName.enum';
 import imageIndex from '../../../assets/imageIndex';
@@ -62,16 +62,20 @@ const DeliveryNewTasksScreen = () => {
 
   const openDrawer = () => navigation.dispatch(DrawerActions.openDrawer());
 
-  const onAccept = (task: TaskItem) => {
-    navigation.navigate(ScreenNameEnum.DeliveryOrderDetails, {
-      order: {
-        id: task.id,
-        orderId: task.id,
-        address: task.address,
-        pickupLocation: task.address.split('—')[0]?.trim() || task.address,
-        deliveryLocation: task.address.split('—')[1]?.trim() || task.address,
-      },
-    });
+  const onAccept = async (task: any) => {
+    const res = await AcceptOrderApi(task._id, setIsLoadingTasks);
+    if (res) {
+      navigation.navigate(ScreenNameEnum.DeliveryOrderDetails, {
+        order: {
+          id: task._id,
+          orderNumber: task.orderNumber,
+          pickupAddress: task.pickupAddress,
+          dropAddress: task.dropAddress,
+          recipientName: task.recipientName,
+          recipientPhone: task.recipientPhone,
+        },
+      });
+    }
   };
 
   const onDecline = (task: TaskItem) => {
@@ -84,12 +88,15 @@ const DeliveryNewTasksScreen = () => {
     setDeclineTask(null);
   };
 
-  const onSubmitDecline = (reasonKey: DeclineReasonKey, reasonLabel: string) => {
-    // TODO: call decline API with declineTask?.id, reasonKey, reasonLabel
-    setDeclineModalVisible(false);
-    setDeclineTask(null);
-       navigation.navigate(ScreenNameEnum.DeliveryFailed);
-
+  const onSubmitDecline = async (reasonKey: DeclineReasonKey, reasonLabel: string) => {
+    if (declineTask) {
+      const res = await DeclineOrderApi(declineTask._id, reasonLabel, setIsLoadingTasks);
+      if (res) {
+        setDeclineModalVisible(false);
+        setDeclineTask(null);
+        fetchTasks();
+      }
+    }
   };
 
   const getTagStyle = (tag: TaskTag) => {

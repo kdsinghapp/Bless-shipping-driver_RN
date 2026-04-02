@@ -1149,6 +1149,114 @@ const AssignVehicleToDriverApi = async (
   }
 };
 
+/** Accept driver order - POST /driver/accept/order/:id */
+const AcceptOrderApi = async (
+  orderId: string,
+  setLoading: (loading: boolean) => void,
+): Promise<any> => {
+  try {
+    setLoading(true);
+    const token = await AsyncStorage.getItem('token');
+    if (!token) {
+      clearAuthSession();
+      errorToast('Session expired. Please login again.');
+      return undefined;
+    }
+
+    const headers: any = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    };
+
+    const url = `${base_url}/${endpoints.acceptOrder}/${orderId}`;
+    console.log('Sending Accept Order Request:', url);
+
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: headers,
+    });
+
+    const text = await response.text();
+    let parsed: any;
+    try {
+      parsed = JSON.parse(text);
+    } catch (e) {
+      errorToast('Invalid server response');
+      return undefined;
+    }
+
+    if (parsed?.success) {
+      successToast(parsed?.message || 'Order accepted successfully');
+      return parsed;
+    } else {
+      errorToast(parsed?.message || 'Failed to accept order');
+      return undefined;
+    }
+  } catch (error) {
+    console.error('Accept Order API Error:', error);
+    errorToast('Network error');
+    return undefined;
+  } finally {
+    setLoading(false);
+  }
+};
+
+/** Decline driver order - POST /driver/decline/order/:id */
+const DeclineOrderApi = async (
+  orderId: string,
+  reason: string,
+  setLoading: (loading: boolean) => void,
+): Promise<any> => {
+  try {
+    setLoading(true);
+    const token = await AsyncStorage.getItem('token');
+    if (!token) {
+      clearAuthSession();
+      errorToast('Session expired. Please login again.');
+      return undefined;
+    }
+
+    const headers: any = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    };
+
+    const url = `${base_url}/${endpoints.declineOrder}/${orderId}`;
+    console.log('Sending Decline Order Request:', url);
+
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: headers,
+      body: JSON.stringify({ reason }),
+    });
+
+    const text = await response.text();
+    let parsed: any;
+    try {
+      parsed = JSON.parse(text);
+    } catch (e) {
+      errorToast('Invalid server response');
+      return undefined;
+    }
+
+    if (parsed?.success) {
+      successToast(parsed?.message || 'Order declined successfully');
+      return parsed;
+    } else {
+      errorToast(parsed?.message || 'Failed to decline order');
+      return undefined;
+    }
+  } catch (error) {
+    console.error('Decline Order API Error:', error);
+    errorToast('Network error');
+    return undefined;
+  } finally {
+    setLoading(false);
+  }
+};
+
 export {
   LogiApi,
   SignUpApi,
@@ -1168,4 +1276,6 @@ export {
   CreateUserOrderApi,
   GetDriverTasksApi,
   AssignVehicleToDriverApi,
+  AcceptOrderApi,
+  DeclineOrderApi,
 };

@@ -22,17 +22,7 @@ import DeliveryOrderDetailsScreen from "../screen/DeliveryRole/DeliveryOrderDeta
 import DeliveryFailedScreen from "../screen/DeliveryRole/DeliveryFailed/DeliveryFailedScreen";
  
 import UserRoleLoginScreen from "../screen/auth/UserRoleLoginScreen/UserRoleLoginScreen";
-import UserRoleDashBoard from "../screen/UserRole/UserRoleDashBoard/UserRoleDashBoard";
-import SendPackage from "../screen/UserRole/SendPackage/SendPackage";
-import InstantDelivery from "../screen/UserRole/SendPackage/InstantDelivery";
-import ShipmentDetailsPackage from "../screen/UserRole/SendPackage/ShipmentDetailsPackage";
-import ShipmentDetailsRecipients from "../screen/UserRole/SendPackage/ShipmentDetailsRecipients";
-import ShipmentDetailsConfirm from "../screen/UserRole/SendPackage/ShipmentDetailsConfirm";
-import UserPricingBreakdown from "../screen/UserRole/SendPackage/UserPricingBreakdown";
-import MyOrder from "../screen/UserRole/MyOrder/MyOrder";
-import MyOrderDetails from "../screen/UserRole/MyOrderDetails/MyOrderDetails";
-import UserRoleSetting from "../screen/UserRole/UserRoleSetting/UserRoleSetting";
-const _routes: any = {
+ const _routes: any = {
   REGISTRATION_ROUTE: [
     {
       name: ScreenNameEnum.SPLASH_SCREEN,
@@ -46,49 +36,16 @@ const _routes: any = {
       name: ScreenNameEnum.ChooseRole,
       Component: ChooseRole,
     },
-    {
-      name: ScreenNameEnum.MyOrderDetails,
-      Component: MyOrderDetails,
-    },
-    {
-      name: ScreenNameEnum.MyOrder,
-      Component: MyOrder,
-    },
+    
 
 
     {
       name: ScreenNameEnum.UserRoleLoginScreen,
       Component: UserRoleLoginScreen,
     },
-    {
-      name: ScreenNameEnum.UserRoleDashBoard,
-      Component: UserRoleDashBoard,
-    },
-    {
-      name: ScreenNameEnum.SendPackage,
-      Component: SendPackage,
-    },
-    {
-      name: ScreenNameEnum.InstantDelivery,
-      Component: InstantDelivery,
-    },
-    {
-      name: ScreenNameEnum.ShipmentDetailsPackage,
-      Component: ShipmentDetailsPackage,
-    },
-    {
-      name: ScreenNameEnum.ShipmentDetailsRecipients,
-      Component: ShipmentDetailsRecipients,
-    },
-    {
-      name: ScreenNameEnum.ShipmentDetailsConfirm,
-      Component: ShipmentDetailsConfirm,
-    },
-    {
-      name: ScreenNameEnum.UserPricingBreakdown,
-      Component: UserPricingBreakdown,
-    },
-
+    
+   
+    
 
 
 
@@ -186,10 +143,7 @@ const _routes: any = {
       name: ScreenNameEnum.NotificationsScreen,
       Component: NotificationsScreen,
     },
-    {
-      name: ScreenNameEnum.setting,
-      Component: UserRoleSetting,
-    },
+   
 
     //    {
     //   name: ScreenNameEnum.DocumentShow,
